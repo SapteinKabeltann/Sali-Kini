@@ -1,0 +1,89 @@
+<template>
+  <div class="container">
+    <nav class="navbar">
+      <NuxtLink to="/" class="nav-link">Hjem</NuxtLink>
+      <NuxtLink to="/kjope" class="nav-link">Kjøp</NuxtLink>
+      <NuxtLink to="/selge" class="nav-link">Salg</NuxtLink>
+    </nav>
+    <div>
+      <img src="/img/Sali Kini2.jpg" alt="">
+    </div>
+    <h2>Hva ønsker du å gjøre {{user.email}}?</h2>
+    <div class="button-container">
+      <NuxtLink to="/selge" class="button">
+        Selge vare
+      </NuxtLink>
+      <NuxtLink to="/kjope" class="button">
+        Kjøpe vare
+      </NuxtLink>
+    </div>
+  </div>
+</template>
+
+<script setup>
+const user = useSupabaseUser();
+const asdf = "1234";
+</script>
+
+<script>
+export default {
+  layout: 'fullpage',
+};
+</script>
+
+<style scoped>
+
+body {
+  overflow: hidden; /* Hindre scroll ved å skjule overflødig innhold */
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-grow: 1;
+  text-align: center;
+  background-color: rgb(226, 213, 194);
+  min-height: 98vh;
+}
+
+.navbar {
+  width: 100%;
+  background-color: rgb(170, 146, 111);
+  display: flex;
+  justify-content: center;
+  padding: 1rem 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.nav-link {
+  color: white;
+  margin: 0 1rem;
+  text-decoration: none;
+  font-size: 1.2rem;
+}
+
+.button-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 2rem;
+  width: 100%;
+  margin-top: 2rem;
+}
+
+.button {
+  background-color: rgb(103, 72, 25);
+  color: white;
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 12px;
+  text-decoration: none;
+  font-size: 1.2rem;
+  text-align: center;
+  width: fit-content;
+}
+</style>
