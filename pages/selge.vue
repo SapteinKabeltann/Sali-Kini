@@ -43,6 +43,7 @@
 
 <script>
 import { ref } from 'vue';
+import { supabase } from '@/lib/initSupabase';
 
 export default {
   setup() {
@@ -53,22 +54,46 @@ export default {
       imageUrl: ''
     });
     const submitted = ref(false);
+    const file = ref(null);
 
-    // Håndter bildeopplasting
     const handleFileUpload = (event) => {
-      const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          product.value.imageUrl = e.target.result; // Lagre bildet som en URL
-        };
-        reader.readAsDataURL(file);
-      }
+      file.value = event.target.files[0];
     };
 
-    const submitProduct = () => {
-      // Her kan du legge til logikk for å sende produktet til backend eller annen behandling
-      submitted.value = true; // Sett submitted til true for å vise bekreftelse
+    const submitProduct = async () => {
+      try {
+        if (file.value) {
+          const fileName = file.value.name.replace(/[^a-zA-Z0-9.]/g, '_'); // Erstatt spesialtegn med underscore
+          const { data, error } = await supabase
+            .storage
+            .from('varer')
+            .upload(`products/${Date.now()}_${fileName}`, file.value);
+
+          if (error) {
+            throw error;
+          }
+
+          product.value.imageUrl = `${process.env.VITE_SUPABASE_URL}/storage/v1/object/public/varer/${data.path}`;
+        }
+
+        // Lagrer produktinformasjonen i Supabase tabellen "products"
+        const { error: insertError } = await supabase
+          .from('products')
+          .insert([{
+            name: product.value.name,
+            description: product.value.description,
+            price: product.value.price,
+            imageUrl: product.value.imageUrl
+          }]);
+
+        if (insertError) {
+          throw insertError;
+        }
+
+        submitted.value = true;
+      } catch (error) {
+        console.error('Error uploading file:', error);
+      }
     };
 
     return {
