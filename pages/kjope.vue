@@ -5,7 +5,7 @@
       <NuxtLink to="/kjope" class="nav-link">Kjøp</NuxtLink>
       <NuxtLink to="/selge" class="nav-link">Salg</NuxtLink>
     </nav>
-    <h2>Hva ønsker du å gjøre {{ user.email }}?</h2>
+    <h2>Produkter til salgs</h2>
     <div class="product-grid">
       <div v-for="product in paginatedVarer" :key="product.id" class="product-card">
         <NuxtLink :to="`/product/${product.id}`">
