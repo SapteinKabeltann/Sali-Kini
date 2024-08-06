@@ -7,10 +7,10 @@
     </nav>
     <h2>Hva ønsker du å gjøre {{ user.email }}?</h2>
     <div class="product-grid">
-      <div v-for="meme in paginatedMemes" :key="meme.id" class="product-card">
-        <NuxtLink :to="`/meme/${meme.id}`">
-          <img :src="meme.url" alt="" class="product-image" />
-          <div class="product-description">{{ meme.name }}</div>
+      <div v-for="product in paginatedVarer" :key="product.id" class="product-card">
+        <NuxtLink :to="`/product/${product.id}`">
+          <img :src="`https://msjupohbqsbqzyjqjdop.supabase.co/storage/v1/object/public/${product.image_url}`" :alt="product.name" class="product-image" />
+          <div class="product-description">{{ product.name }}</div>
         </NuxtLink>
       </div>
     </div>
@@ -23,28 +23,33 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import axios from 'axios';
 
 const user = useSupabaseUser();
-
-const memes = ref([]);
+const supabase = useSupabaseClient();
+const varer = ref([]);
 const currentPage = ref(1);
-const memesPerPage = 30;
+const varerPerPage = 30;
 
-const totalPages = computed(() => Math.ceil(memes.value.length / memesPerPage));
+const totalPages = computed(() => Math.ceil(varer.value.length / varerPerPage));
 
-const paginatedMemes = computed(() => {
-  const start = (currentPage.value - 1) * memesPerPage;
-  return memes.value.slice(start, start + memesPerPage);
+const paginatedVarer = computed(() => {
+  const start = (currentPage.value - 1) * varerPerPage;
+  return varer.value.slice(start, start + varerPerPage);
 });
 
-const fetchMemes = async () => {
-  try {
-    const response = await axios.get('https://api.imgflip.com/get_memes');
-    memes.value = response.data.data.memes;
-  } catch (error) {
-    console.error('Feil ved henting av memes:', error);
+//dette er gold standar  til fek update/ insert/ delete vise versa..   -sølve 
+const fetchProducts = async () => {
+
+  const { data, error } = await supabase
+    .from('products')
+    .select("*")
+
+  if(error) {
+    console.error("finner ikke produkter" , error);
+    return
   }
+  
+  varer.value = data  
 };
 
 const nextPage = () => {
@@ -60,7 +65,7 @@ const previousPage = () => {
 };
 
 onMounted(() => {
-  fetchMemes();
+  fetchProducts();
 });
 </script>
 
