@@ -36,7 +36,7 @@
       <p><strong>Navn:</strong> {{ product.name }}</p>
       <p><strong>Beskrivelse:</strong> {{ product.description }}</p>
       <p><strong>Pris:</strong> {{ product.price }} NOK</p>
-      <img :src="product.imageUrl" alt="Produktbilde" class="uploaded-image" />
+      <img :src="`https://msjupohbqsbqzyjqjdop.supabase.co/storage/v1/object/public/${product.image_url}`" alt="Produktbilde" class="uploaded-image" />
     </div>
   </div>
 </template>
@@ -51,7 +51,7 @@ export default {
       name: '',
       description: '',
       price: null,
-      imageUrl: ''
+      image_url: ''
     });
     const submitted = ref(false);
     const file = ref(null);
@@ -63,18 +63,24 @@ export default {
     const submitProduct = async () => {
       try {
         if (file.value) {
-          const fileName = file.value.name.replace(/[^a-zA-Z0-9.]/g, '_'); // Erstatt spesialtegn med underscore
+          // Erstatt spesialtegn med underscore i filnavn
+          const fileName = file.value.name.replace(/[^a-zA-Z0-9.]/g, '_'); 
+          const filePath = `${Date.now()}_${fileName}`;
+
+          // Last opp filen til Supabase storage
           const { data, error } = await supabase
             .storage
             .from('varer')
-            .upload(`products/${Date.now()}_${fileName}`, file.value);
+            .upload(filePath, file.value);
 
           if (error) {
             throw error;
           }
 
-          product.value.imageUrl = `${process.env.VITE_SUPABASE_URL}/storage/v1/object/public/varer/${data.path}`;
-        }
+      // Lagre image URL til produkt
+      product.value.image_url = `varer/${filePath}`;
+    }
+    
 
         // Lagrer produktinformasjonen i Supabase tabellen "products"
         const { error: insertError } = await supabase
@@ -83,7 +89,7 @@ export default {
             name: product.value.name,
             description: product.value.description,
             price: product.value.price,
-            imageUrl: product.value.imageUrl
+            image_url: product.value.image_url
           }]);
 
         if (insertError) {
