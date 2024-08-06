@@ -11,6 +11,7 @@
         <NuxtLink :to="`/product/${product.id}`">
           <img :src="`https://msjupohbqsbqzyjqjdop.supabase.co/storage/v1/object/public/${product.image_url}`" :alt="product.name" class="product-image" />
           <div class="product-description">{{ product.name }}</div>
+          <div class="product-description">{{ product.price + "kr" }}</div>
         </NuxtLink>
       </div>
     </div>

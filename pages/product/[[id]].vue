@@ -10,7 +10,7 @@
     <div class="product-content" v-if="product">
        <img :src="`https://msjupohbqsbqzyjqjdop.supabase.co/storage/v1/object/public/${product.image_url}`" :alt="product.name" class="product-image" />
       <h2>{{ product.description }}</h2>
-      <p>Mer beskrivelse om produktet...</p>
+      <div class="product-description">{{ product.price + "kr" }}</div>
     </div>
   </div>
 </template>
