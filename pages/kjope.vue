@@ -5,11 +5,22 @@
       <NuxtLink to="/kjope" class="nav-link">Kjøp</NuxtLink>
       <NuxtLink to="/selge" class="nav-link">Salg</NuxtLink>
     </nav>
+
+    <div class="search-form">
+      <input
+        type="text"
+        v-model="searchQuery"
+        placeholder="Søk etter produkter..."
+        @keyup.enter="searchProducts" 
+      />
+      <button class="search-button" @click="searchProducts">Søk</button>
+    </div>
+
     <h2>Produkter til salgs</h2>
     <div class="product-grid">
-      <div v-for="product in paginatedVarer" :key="product.id" class="product-card">
+      <div v-for="product in paginatedProducts" :key="product.id" class="product-card">
         <NuxtLink :to="`/product/${product.id}`">
-          <img :src="`https://msjupohbqsbqzyjqjdop.supabase.co/storage/v1/object/public/${product.image_url}`" :alt="product.name" class="product-image" />
+          <img height="300px" :src="`https://msjupohbqsbqzyjqjdop.supabase.co/storage/v1/object/public/${product.image_url}`" :alt="product.name" class="product-image" />
           <div class="product-description">{{ product.name }}</div>
           <div class="product-description">{{ product.price + "kr" }}</div>
         </NuxtLink>
@@ -22,36 +33,53 @@
   </div>
 </template>
 
-<script setup>
-import { ref, computed, onMounted } from 'vue';
 
-const user = useSupabaseUser();
+<script setup>
+import { ref, computed, onMounted, watch } from 'vue';
+
 const supabase = useSupabaseClient();
-const varer = ref([]);
+const products = ref([]); // Produkter som vises på siden
+const searchQuery = ref(""); // Søkespørring
 const currentPage = ref(1);
 const varerPerPage = 30;
 
-const totalPages = computed(() => Math.ceil(varer.value.length / varerPerPage));
+const totalPages = computed(() => Math.ceil(products.value.length / varerPerPage));
 
-const paginatedVarer = computed(() => {
+const paginatedProducts = computed(() => {
   const start = (currentPage.value - 1) * varerPerPage;
-  return varer.value.slice(start, start + varerPerPage);
+  return products.value.slice(start, start + varerPerPage);
 });
 
-//dette er gold standar  til fek update/ insert/ delete vise versa..   -sølve 
-const fetchProducts = async () => {
-
-  const { data, error } = await supabase
+const fetchProducts = async (query = "") => {
+  let { data, error } = await supabase
     .from('products')
-    .select("*")
+    .select("*");
 
-  if(error) {
-    console.error("finner ikke produkter" , error);
-    return
+  if (query) {
+    data = data.filter((product) =>
+      product.name.toLowerCase().includes(query.toLowerCase())
+    );
   }
-  
-  varer.value = data  
+
+  if (error) {
+    console.error("Finner ikke produkter", error);
+    return;
+  }
+
+  products.value = data;
 };
+
+const searchProducts = () => {
+  currentPage.value = 1; // Tilbakestill til første side ved nytt søk
+  fetchProducts(searchQuery.value); // Hent produkter basert på søkespørring
+};
+
+// Watcher for å overvåke endringer i søkefeltet
+watch(searchQuery, (newQuery) => {
+  if (newQuery.trim() === "") {
+    fetchProducts(); // Hvis søkefeltet er tomt, hent alle produkter igjen
+  }
+});
 
 const nextPage = () => {
   if (currentPage.value < totalPages.value) {
@@ -66,15 +94,19 @@ const previousPage = () => {
 };
 
 onMounted(() => {
-  fetchProducts();
+  fetchProducts(); // Hent alle produkter ved initiering
 });
 </script>
+
+
 
 <style scoped>
 
 body {
   overflow: hidden; /* Hindre scroll ved å skjule overflødig innhold */
 }
+
+
 
 .container {
   display: flex;
@@ -138,14 +170,17 @@ body {
 }
 
 button {
-  padding: 0.5rem 1rem;
-  font-size: 1rem;
+  padding: 0.5rem 0.5rem;
+  font-size: 0.7rem;
   border: none;
   border-radius: 5px;
-  background-color: rgb(238, 216, 183);
+  background-color: rgb(103, 72, 25);
   color: white;
   cursor: pointer;
 }
+
+search-button
+
 
 button:disabled {
   background-color: #ccc;

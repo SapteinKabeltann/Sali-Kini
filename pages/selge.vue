@@ -36,80 +36,128 @@
       <p><strong>Navn:</strong> {{ product.name }}</p>
       <p><strong>Beskrivelse:</strong> {{ product.description }}</p>
       <p><strong>Pris:</strong> {{ product.price }} NOK</p>
-      <img :src="`https://msjupohbqsbqzyjqjdop.supabase.co/storage/v1/object/public/${product.image_url}`" alt="Produktbilde" class="uploaded-image" />
+      <p><strong>PLU:</strong> {{ product.plu }}</p>
+      <svg id="barcode"></svg> <!-- Legg til et element for strekkoden -->
+      <button @click="generatePDF">Last ned PDF</button> 
     </div>
   </div>
 </template>
 
-<script>
-import { ref } from 'vue';
+<script setup>
+import { ref, watch, nextTick } from 'vue';
 import { supabase } from '@/lib/initSupabase';
+import { v4 as uuidv4 } from 'uuid'; 
+import JsBarcode from 'jsbarcode'; 
+import jsPDF from 'jspdf';
 
-export default {
-  setup() {
-    const product = ref({
-      name: '',
-      description: '',
-      price: null,
-      image_url: ''
-    });
-    const submitted = ref(false);
-    const file = ref(null);
+const product = ref({
+  name: '',
+  description: '',
+  price: null,
+  image_url: '',
+  plu: '' 
+});
+const submitted = ref(false);
+const file = ref(null);
 
-    const handleFileUpload = (event) => {
-      file.value = event.target.files[0];
-    };
+const handleFileUpload = (event) => {
+  file.value = event.target.files[0];
+};
 
-    const submitProduct = async () => {
-      try {
-        if (file.value) {
-          // Erstatt spesialtegn med underscore i filnavn
-          const fileName = file.value.name.replace(/[^a-zA-Z0-9.]/g, '_'); 
-          const filePath = `${Date.now()}_${fileName}`;
+const submitProduct = async () => {
+  try {
+    if (file.value) {
+      // Erstatt spesialtegn med underscore i filnavn
+      const fileName = file.value.name.replace(/[^a-zA-Z0-9.]/g, '_');
+      const filePath = `${Date.now()}_${fileName}`;
 
-          // Last opp filen til Supabase storage
-          const { data, error } = await supabase
-            .storage
-            .from('varer')
-            .upload(filePath, file.value);
+      // Last opp filen til Supabase storage
+      const { data, error } = await supabase
+        .storage
+        .from('varer')
+        .upload(filePath, file.value);
 
-          if (error) {
-            throw error;
-          }
+      if (error) {
+        throw error;
+      }
 
       // Lagre image URL til produkt
       product.value.image_url = `varer/${filePath}`;
     }
-    
 
-        // Lagrer produktinformasjonen i Supabase tabellen "products"
-        const { error: insertError } = await supabase
-          .from('products')
-          .insert([{
-            name: product.value.name,
-            description: product.value.description,
-            price: product.value.price,
-            image_url: product.value.image_url
-          }]);
+    // Generer en unik PLU-kode
+    product.value.plu = uuidv4(); // Bruk UUID-biblioteket for å generere kode
 
-        if (insertError) {
-          throw insertError;
-        }
+    // Lagre produktinformasjonen i Supabase tabellen "products"
+    const { error: insertError } = await supabase
+      .from('products')
+      .insert([{
+        name: product.value.name,
+        description: product.value.description,
+        price: product.value.price,
+        image_url: product.value.image_url,
+        plu: product.value.plu 
+      }]);
 
-        submitted.value = true;
-      } catch (error) {
-        console.error('Error uploading file:', error);
-      }
-    };
+    if (insertError) {
+      throw insertError;
+    }
 
-    return {
-      product,
-      submitted,
-      handleFileUpload,
-      submitProduct
-    };
+    submitted.value = true;
+  } catch (error) {
+    console.error('Error uploading file:', error);
   }
 };
+
+// Funksjon for å konvertere SVG til Data URL
+const svgToDataUrl = (svgElement) => {
+  const serializer = new XMLSerializer();
+  const svgString = serializer.serializeToString(svgElement);
+  return `data:image/svg+xml;base64,${btoa(svgString)}`;
+};
+
+// Funksjon for å generere strekkoden
+const generateBarcode = () => {
+  const barcodeElement = document.getElementById('barcode');
+  if (barcodeElement) {
+    JsBarcode("#barcode", product.value.plu, {
+      format: "CODE128",
+      lineColor: "#0aa",
+      width: 2,
+      height: 100,
+      displayValue: true
+    });
+  }
+};
+
+const generatePDF = () => {
+  const doc = new jsPDF();
+  const barcodeElement = document.getElementById('barcode');
+  
+  if (barcodeElement) {
+    const barcodeDataUrl = svgToDataUrl(barcodeElement);
+
+    // Lag PDF
+    doc.text('Produkt Detaljer', 10, 10);
+    doc.text(`Navn: ${product.value.name}`, 10, 20);
+    doc.text(`Beskrivelse: ${product.value.description}`, 10, 30);
+    doc.text(`Pris: ${product.value.price} NOK`, 10, 40);
+    doc.text(`PLU: ${product.value.plu}`, 10, 50);
+    doc.addImage(barcodeDataUrl, 'SVG', 10, 60, 180, 20); // Legg til strekkoden i PDF
+
+    doc.save('product-details.pdf');
+  } else {
+    console.error('Barcode element not found!');
+  }
+};
+
+// Generer strekkode og PDF etter at komponenten er montert
+watch(submitted, async (newValue) => {
+  if (newValue) {
+    await nextTick(); // Vent på at DOM-en skal oppdateres
+    generateBarcode();
+  }
+});
 </script>
 
 <style scoped>
