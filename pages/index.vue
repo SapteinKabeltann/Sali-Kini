@@ -32,6 +32,18 @@ export default {
 </script>
 
 <style scoped>
+/* Fjern standard margin og padding */
+body, html {
+  margin: 0;
+  padding: 0;
+}
+
+/* Fiks for å hindre hvit linje mellom navbar og container */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
 body {
   overflow: hidden; /* Hindre scroll ved å skjule overflødig innhold */
@@ -45,7 +57,7 @@ body {
   flex-grow: 1;
   text-align: center;
   background-color: rgb(226, 213, 194);
-  min-height: 98vh;
+  min-height: 100vh; /* Endret fra 98vh til 100vh */
 }
 
 .navbar {
@@ -57,6 +69,7 @@ body {
   position: absolute;
   top: 0;
   left: 0;
+  margin: 0; /* Sørg for at navbaren ikke har margin */
 }
 
 .nav-link {

@@ -33,7 +33,6 @@
   </div>
 </template>
 
-
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue';
 
@@ -98,15 +97,23 @@ onMounted(() => {
 });
 </script>
 
-
-
 <style scoped>
+/* Fjern standard margin og padding */
+body, html {
+  margin: 0;
+  padding: 0;
+}
+
+/* Fiks for å hindre hvit linje mellom navbar og container */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
 body {
   overflow: hidden; /* Hindre scroll ved å skjule overflødig innhold */
 }
-
-
 
 .container {
   display: flex;
@@ -116,7 +123,7 @@ body {
   flex-grow: 1;
   text-align: center;
   background-color: rgb(226, 213, 194);
-  min-height: 98vh;
+  min-height: 178vh; /* Endret fra 98vh til 100vh */
 }
 
 .navbar {
@@ -128,6 +135,7 @@ body {
   position: absolute;
   top: 0;
   left: 0;
+  margin: 0; /* Sørg for at navbaren ikke har margin */
 }
 
 .nav-link {
@@ -178,9 +186,6 @@ button {
   color: white;
   cursor: pointer;
 }
-
-search-button
-
 
 button:disabled {
   background-color: #ccc;
