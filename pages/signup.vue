@@ -85,6 +85,16 @@ const submitForm = async () => {
         return;
     }
 
+    // TODO: Her må du oppdatere vår bruker tabell med first name og last name så ala
+    // const { data, error: updateError } = await supabase
+    //     .from('users')
+    //     .update({ first_name: firstName.value, last_name: lastName.value })
+    //     .eq('id', user.id)
+
+    // if (updateError) {
+
+
+
     // Redirect to the login page
     router.push(`/login?email=${email.value}`);
 }

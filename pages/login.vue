@@ -4,6 +4,7 @@
             <input type="email" autocomplete="email" v-model="email" placeholder="Username">
             <input type="password" v-model="password" placeholder="Password">
             <button>submit</button>
+            <button @click="redirectToSignup">Signup</button>
         </form>
         
     </div>
@@ -31,6 +32,11 @@ const signInWithPassword = async () => {
         console.log('logged in')
         router.push('/')
     }
+}
+
+
+const redirectToSignup = () => {
+    router.push('/signup')  // Navigerer til /signup-siden
 }
 
 /*watch(username, (newInput, oldInput) =>  {
