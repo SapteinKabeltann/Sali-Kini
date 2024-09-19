@@ -22,7 +22,7 @@
                 <label for="password">Password:</label>
                 <input type="password" id="password" v-model="password" required />
                 <span :class="[passwordHas6Characters ? 'valid' : 'invalid']">
-                    <span v-if="passwordHas6Characters === true">✅ Has more than 6 characters</span>
+                    <span v-if="passwordHas6Characters === true">✅ Minimum 6 characters</span>
                     <span v-else>❌ Missing {{ 6 - password.length }} characters</span>
                 </span>
 
