@@ -36,7 +36,7 @@
                 </span>
             </div>
 
-            <button type="submit">Sign Up</button>
+            <button type="submit" :disabled="passwordIsSame === false || passwordHas6Characters === false">Sign Up</button>
 
             <p v-if="error" class="error">
                 {{ error }}
@@ -126,6 +126,11 @@ const submitForm = async () => {
     border: none;
     border-radius: 4px;
     cursor: pointer;
+}
+
+.signup-form button:disabled {
+    background-color: #ccc !important;
+    cursor: not-allowed;
 }
 
 .signup-form button:hover {
