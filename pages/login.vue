@@ -11,17 +11,18 @@
 </template>
 
 <script setup>
+const router = useRouter()
+const emailFromQuery = router.currentRoute.value.query.email
 
-const email = ref(null)
+const email = ref(emailFromQuery || '')
 const password = ref(null)
 const supabase = useSupabaseClient()
-const router = useRouter()
+
 
 const signInWithPassword = async () => {
     const { error } = await supabase.auth.signInWithPassword({
         email: email.value,
         password: password.value,
-        
     })
     
     if (error) console.log(error)
