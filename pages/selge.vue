@@ -1,10 +1,5 @@
 <template>
   <div class="container">
-    <nav class="navbar">
-      <NuxtLink to="/" class="nav-link">Hjem</NuxtLink>
-      <NuxtLink to="/kjope" class="nav-link">Kjøp</NuxtLink>
-      <NuxtLink to="/selge" class="nav-link">Salg</NuxtLink>
-    </nav>
     <h1>Salgsside</h1>
 
     <form @submit.prevent="submitProduct" class="product-form">

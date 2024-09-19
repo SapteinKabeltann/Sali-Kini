@@ -1,11 +1,5 @@
 <template>
   <div class="container">
-    <nav class="navbar">
-      <NuxtLink to="/" class="nav-link">Hjem</NuxtLink>
-      <NuxtLink to="/kjope" class="nav-link">Kjøp</NuxtLink>
-      <NuxtLink to="/selge" class="nav-link">Salg</NuxtLink>
-    </nav>
-
     <div class="search-form">
       <input
         type="text"
@@ -124,25 +118,6 @@ body {
   text-align: center;
   background-color: rgb(226, 213, 194);
   min-height: 178vh; /* Endret fra 98vh til 100vh */
-}
-
-.navbar {
-  width: 100%;
-  background-color: rgb(170, 146, 111);
-  display: flex;
-  justify-content: center;
-  padding: 1rem 0;
-  position: absolute;
-  top: 0;
-  left: 0;
-  margin: 0; /* Sørg for at navbaren ikke har margin */
-}
-
-.nav-link {
-  color: white;
-  margin: 0 1rem;
-  text-decoration: none;
-  font-size: 1.2rem;
 }
 
 .product-grid {
