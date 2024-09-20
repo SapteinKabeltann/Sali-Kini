@@ -14,7 +14,7 @@
     <div class="product-grid">
       <div v-for="product in paginatedProducts" :key="product.id" class="product-card">
         <NuxtLink :to="`/product/${product.id}`">
-          <img height="300px" :src="`https://msjupohbqsbqzyjqjdop.supabase.co/storage/v1/object/public/${product.image_url}`" :alt="product.name" class="product-image" />
+          <img :src="`https://msjupohbqsbqzyjqjdop.supabase.co/storage/v1/object/public/${product.image_url}`" :alt="product.name" class="product-image" />
           <div class="product-description">{{ product.name }}</div>
           <div class="product-description">{{ product.price + "kr" }}</div>
         </NuxtLink>
@@ -136,8 +136,14 @@ body {
 }
 
 .product-image {
-  max-width: 100%;
-  border-radius: 12px;
+  width: 150px;
+  height: 80%; /* Sett ønsket høyde på produktkortet */
+  object-fit: cover; /* Bildet fyller produktkortet ved å beskjære det */
+  transition: transform 0.3s ease-in-out; /* Legg til en zoom-effekt ved hover */
+}
+
+.product-card:hover .product-image {
+  transform: scale(1.18); /* Zoom inn når musen hovrer over produktkortet */
 }
 
 .product-description {
