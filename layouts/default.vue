@@ -4,6 +4,7 @@
             <NuxtLink to="/" class="nav-link">Hjem</NuxtLink>
             <NuxtLink to="/kjope" class="nav-link">Kjøp</NuxtLink>
             <NuxtLink to="/selge" class="nav-link">Salg</NuxtLink>
+            <NuxtLink to ="/user" class="nav-link">Min side</NuxtLink>
         </nav> 
         <slot />
         <!-- her kan du ligge en footer -->

@@ -3,7 +3,7 @@
     <NuxtPage />
   </NuxtLayout>
 </template>
-ix
+
 <style>
 /* Fjern standard margin og padding */
 body, html {
